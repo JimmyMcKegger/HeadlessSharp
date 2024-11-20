@@ -4,6 +4,7 @@
   "extensions": {
     "strawberryShake": {
       "name": "ShopifyClient",
+      "namespace": "HeadlessSharp",
       "url": "https://garrain.myshopify.com/api/graphql.json",
       "records": {
         "inputs": false,
