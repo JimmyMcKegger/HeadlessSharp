@@ -13,6 +13,7 @@
         "packagesPath": "/Users/james/.nuget/packages/",
         "outputPath": "/Users/james/Documents/DkIT/Programming2/CA2/HeadlessSharp/HeadlessSharp/obj/",
         "projectStyle": "PackageReference",
+        "UsingMicrosoftNETSdk": false,
         "configFilePaths": [
           "/Users/james/.nuget/NuGet/NuGet.Config"
         ],
@@ -52,13 +53,9 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
-            "StrawberryShake.Blazor": {
+            "System.Net.Http": {
               "target": "Package",
-              "version": "[14.1.0, )"
-            },
-            "StrawberryShake.Transport.Http": {
-              "target": "Package",
-              "version": "[14.1.0, )"
+              "version": "[4.3.4, )"
             }
           },
           "imports": [

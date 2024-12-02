@@ -13,17 +13,7 @@ string apiKey = Environment.GetEnvironmentVariable("STOREFRONT_API_TOKEN");
 string domain = Environment.GetEnvironmentVariable("STOREFRONT_DOMAIN");
 Console.WriteLine($"DOMAIN: {domain}");
 
-// add http client
-// https://learn.microsoft.com/en-us/aspnet/core/blazor/call-web-api?view=aspnetcore-8.0
-builder.Services
-    .AddShopifyClient()
-    .ConfigureHttpClient(client =>
-{
-    client.BaseAddress = new Uri(domain);
-    client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", apiKey);
-    client.DefaultRequestHeaders.Add("Content-Type", "application/json");
-});
-
+builder.Services.AddHttpClient();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
