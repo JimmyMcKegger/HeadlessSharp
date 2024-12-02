@@ -1,4 +1,5 @@
 ﻿@page "/"
+@implements IObserver;
 
 <PageTitle>Home</PageTitle>
 
@@ -8,14 +9,29 @@
     [Inject] private HttpClient _httpClient { get; set; }
     private string shopDetails = "Loading...";
     
+    //  Error CS0120 : An object reference is required for the non-static field, method, or property 'SfapiSubject.RegisterObserver(IObserver)'
+    private void Startup()
+    {
+        SfapiSubject.Instance.RegisterObserver(this);
+    }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         base.OnAfterRender(firstRender);
         if (firstRender)
         {
+            // TODO: register with observable
+            Startup();
+            // await SfapiSubject.GetShopInfo();
+            
+            // TODO: Create a cart observer 
+            // Get product info
+            
+            
             var request = new HttpRequestMessage(HttpMethod.Post, "https://garrain.myshopify.com/api/2024-10/graphql.json");
             request.Headers.Add("X-Shopify-Storefront-Access-Token", "768cb01e8579585e695152a3b4b89ab0");
 
+            // TODO: Parse request from a GraphQL file and add to string Content
             var content = new StringContent("{\"query\":\"query{\\n    shop{\\n        id\\n    }\\n}\",\"variables\":{}}", null, "application/json");
             request.Content = content;
 
@@ -26,4 +42,13 @@
         }
         StateHasChanged();
     }
+
+    public void Update(string shopInfo)
+    {
+        // update data
+        // extract details
+        // re-render
+        Console.WriteLine($"UPDATES: {shopInfo}");
+    }
+
 }
