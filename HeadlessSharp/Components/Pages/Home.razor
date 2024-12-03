@@ -17,6 +17,8 @@
         {
             Startup();
         }
+        
+        SfapiSubject.GetInstance().GetShopInfo();
     }
     
     public void Update(string shopInfo)
@@ -29,6 +31,5 @@
     private void Startup()
     {
         SfapiSubject.GetInstance().RegisterObserver(this);
-        SfapiSubject.GetInstance().GetShopInfo();
     }
 }
