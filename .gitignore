@@ -489,3 +489,6 @@ _ReSharper.*
 bin
 obj
 packages
+
+schema.graphql
+schema.extensions.graphql
