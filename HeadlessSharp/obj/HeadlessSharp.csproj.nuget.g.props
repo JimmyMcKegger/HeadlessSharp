@@ -12,4 +12,7 @@
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <SourceRoot Include="/Users/james/.nuget/packages/" />
   </ItemGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgGraphQL_Analyzers Condition=" '$(PkgGraphQL_Analyzers)' == '' ">/Users/james/.nuget/packages/graphql.analyzers/8.2.1</PkgGraphQL_Analyzers>
+  </PropertyGroup>
 </Project>
