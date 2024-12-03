@@ -1,6 +1,6 @@
 using HeadlessSharp.Components;
 using DotNetEnv;
-
+using HeadlessSharp;
 
 // get storefront API key from environment file
 Env.Load();
@@ -8,12 +8,6 @@ Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
-
-string apiKey = Environment.GetEnvironmentVariable("STOREFRONT_API_TOKEN");
-string domain = Environment.GetEnvironmentVariable("STOREFRONT_DOMAIN");
-Console.WriteLine($"DOMAIN: {domain}");
-
-builder.Services.AddHttpClient();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -37,4 +31,17 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+// Start singleton with environment variables
+string apiKey = Environment.GetEnvironmentVariable("STOREFRONT_API_TOKEN");
+// Console.WriteLine($"API Key: {apiKey}");
+string domain = Environment.GetEnvironmentVariable("STOREFRONT_DOMAIN");
+// Console.WriteLine($"Domain: {domain}");
+if (apiKey != null && domain != null)
+{
+    var _singleton = SfapiSubject.GetInstance(apiKey, domain);
+    app.Run();
+}
+else
+{
+    throw new Exception("API key or domain is missing.");
+}
