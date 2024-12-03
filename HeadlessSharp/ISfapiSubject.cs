@@ -9,5 +9,5 @@ public interface ISfapiSubject
     void UnregisterObserver(IObserver observer);
     
     // update all observers
-    void NotifyObservers();
+    void NotifyObservers(string data);
 }

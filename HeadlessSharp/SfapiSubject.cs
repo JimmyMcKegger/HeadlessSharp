@@ -1,3 +1,7 @@
+using GraphQL;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
+
 namespace HeadlessSharp;
 
 // observable storefront API interface
@@ -5,55 +9,60 @@ public class SfapiSubject : ISfapiSubject
 {
     // fields
     private List<IObserver> observers = new List<IObserver>();
-    private HttpClient _httpClient { get; set; }
-    private string ResponseBody { get; set; }
+    private readonly GraphQLHttpClient graphqlClient;
+    private static SfapiSubject _instance;
     
     // getters and setters
+    private string ResponseBody { get; set; }
     public List<IObserver> Observers { get; set; }
     public string CartId { get; set; }
-
-    // make a singleton because there is only one API
-    public static readonly SfapiSubject Instance = new SfapiSubject();
+    
+    public static SfapiSubject GetInstance(string apiKey = "", string domain = "")
+    {
+        if (_instance == null)
+        {
+            // make a singleton because there is only one API
+            _instance = new SfapiSubject(apiKey, domain);
+        }
+        return _instance;
+    }
     
     //  private constructor
-    private SfapiSubject() { }
+    private SfapiSubject(string apiKey, string domain)
+    {
+        graphqlClient = new GraphQLHttpClient($"https://{domain}/api/2024-10/graphql.json", new NewtonsoftJsonSerializer());
+        graphqlClient.HttpClient.DefaultRequestHeaders.Add("X-Shopify-Storefront-Access-Token", apiKey);
+    }
     
     public async Task GetShopInfo()
     {
-        string result = "";
+        GraphQLRequest shopQuery = GraphQLQueries.GetHomePageData();
+        var response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
+        Console.WriteLine($"RESPONSE DATA\n{response.Data}");
+        var shopInfo = response.Data;
+        NotifyObservers(shopInfo.ToString());
         
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://garrain.myshopify.com/api/2024-10/graphql.json");
-        request.Headers.Add("X-Shopify-Storefront-Access-Token", "768cb01e8579585e695152a3b4b89ab0");
-
-        // TODO: Parse request from a GraphQL file and add to string Content
-        var content = new StringContent("{\"query\":\"query{\\n    shop{\\n        id\\n    }\\n}\",\"variables\":{}}", null, "application/json");
-        request.Content = content;
-
-        var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        ResponseBody = await response.Content.ReadAsStringAsync();
     }
-    // observer will register with the SfapiSubject using the following method
+    // register with the SfapiSubject using the following method
     public void RegisterObserver(IObserver observer)
     {
+        Console.WriteLine($"ADDING OBSERVER: {observer}");
+        // TODO: only add once
         observers.Add(observer);
     }
     
-    // The observer will unregister from the storefront API subject using the following method
+    // unregister from the storefront API subject using the following method
     public void UnregisterObserver(IObserver observer)
     {
+        Console.WriteLine($"REMOVING OBSERVER: {observer}");
         observers.Remove(observer);
     }
-    
 
-    public void NotifyObservers()
+    public void NotifyObservers(string data)
     {
-        Console.WriteLine("Notify ");
-
-        foreach (IObserver observer in observers)
+        foreach (var observer in observers)
         {
-            // update the observers
-           observer.Update("cartInfo");
+            observer.Update(data);
         }
     }
 }
