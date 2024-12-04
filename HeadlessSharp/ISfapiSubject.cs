@@ -1,3 +1,5 @@
+using Newtonsoft.Json.Linq;
+
 namespace HeadlessSharp;
 
 public interface ISfapiSubject
@@ -9,5 +11,5 @@ public interface ISfapiSubject
     void UnregisterObserver(IObserver observer);
     
     // update all observers
-    void NotifyObservers(string data);
+    void NotifyObservers(JObject data);
 }

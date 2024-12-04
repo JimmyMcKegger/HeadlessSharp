@@ -32,13 +32,13 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 // Start singleton with environment variables
-string apiKey = Environment.GetEnvironmentVariable("STOREFRONT_API_TOKEN");
-// Console.WriteLine($"API Key: {apiKey}");
-string domain = Environment.GetEnvironmentVariable("STOREFRONT_DOMAIN");
-// Console.WriteLine($"Domain: {domain}");
-if (apiKey != null && domain != null)
+string ApiKey = Environment.GetEnvironmentVariable("STOREFRONT_API_TOKEN");
+string Domain = Environment.GetEnvironmentVariable("STOREFRONT_DOMAIN");
+string ApiVersion = Environment.GetEnvironmentVariable("STOREFRONT_API_VERSION");
+
+if (ApiKey != null && Domain != null && ApiVersion != null)
 {
-    var _singleton = SfapiSubject.GetInstance(apiKey, domain);
+    var _singleton = SfapiSubject.GetInstance(ApiKey, Domain, ApiVersion);
     app.Run();
 }
 else

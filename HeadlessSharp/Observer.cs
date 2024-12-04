@@ -1,3 +1,5 @@
+using Newtonsoft.Json.Linq;
+
 namespace HeadlessSharp;
 
 public class Observer : IObserver
@@ -27,8 +29,8 @@ public class Observer : IObserver
         subject.UnregisterObserver(this);
     }
     
-    public void Update(string message)
+    public void Update(JObject message)
     {
-        DisplayMessage = message;
+        DisplayMessage = message.ToString();
     }
 }

@@ -1,13 +1,14 @@
 ﻿@inherits LayoutComponentBase
+@implements IObserver;
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu/>
+        <NavMenu ShopDetails="@ShopDetails"/>
     </div>
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <a href="#">About</a>
         </div>
 
         <article class="content px-4">
@@ -21,3 +22,31 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code{
+
+    private JObject? ShopDetails = null;
+    
+    // initial page load should have the observer subscribe to the observable
+    // then it triggers the API request to populate data
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+            Startup();
+        }
+    }
+    
+    public void Update(JObject shopInfo)
+    {
+        Console.WriteLine($"UPDATES: {shopInfo}");
+        ShopDetails = shopInfo;
+        StateHasChanged();
+    }
+    
+    private void Startup()
+    {
+        SfapiSubject.GetInstance().RegisterObserver(this);
+    }
+}

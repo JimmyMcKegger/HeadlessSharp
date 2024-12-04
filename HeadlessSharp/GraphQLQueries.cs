@@ -10,12 +10,14 @@ namespace HeadlessSharp
             {
                 Query = @"
                     query {
-                        shop {
-                            id
-                            name
-                            description
-                        }
-                    }"
+                      shop {
+                      id
+                      name
+                      brand{
+                        shortDescription
+                      }
+                     }
+                   }"
             };
         }
     }

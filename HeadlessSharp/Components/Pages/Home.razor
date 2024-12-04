@@ -1,35 +1,44 @@
 ﻿@page "/"
 @implements IObserver;
+@implements IDisposable;
+
 
 <PageTitle>Home</PageTitle>
 
-<h1>@shopDetails</h1>
+<h1>@shopName</h1>
+
+<h2>@shopDescription</h2>
 
 @code {
-    private string shopDetails = "Loading...";
+    private string? shopName = "Loading...";
+    private string? shopDescription = "";
     
     // initial page load should have the observer subscribe to the observable
     // then it triggers the API request to populate data
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        base.OnAfterRender(firstRender);
         if (firstRender)
         {
             Startup();
         }
-        
-        SfapiSubject.GetInstance().GetShopInfo();
     }
     
-    public void Update(string shopInfo)
+    public void Update(JObject shopInfo)
     {
-        Console.WriteLine($"UPDATES: {shopInfo}");
-        shopDetails = shopInfo;
+        shopName = shopInfo["shop"]?["name"]?.ToString();
+        shopDescription = shopInfo["shop"]?["brand"]?["shortDescription"]?.ToString();
         StateHasChanged();
     }
     
-    private void Startup()
+    private async void Startup()
     {
         SfapiSubject.GetInstance().RegisterObserver(this);
+        await SfapiSubject.GetInstance().GetShopInfo();
+    }
+    
+    public void Dispose()
+    {
+        Console.WriteLine("DISPOSING HOME COMPONENT");
+        SfapiSubject.GetInstance().UnregisterObserver(this);
     }
 }

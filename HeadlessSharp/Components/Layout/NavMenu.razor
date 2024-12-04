@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">HeadlessSharp</a>
+        <a class="navbar-brand" href="">@ShopName</a>
     </div>
 </div>
 
@@ -27,3 +27,15 @@
         </div>
     </nav>
 </div>
+
+@code {
+
+    [Parameter] public JObject? ShopDetails { get; set; }
+    private string? ShopName = "";
+    
+    protected override void OnParametersSet()
+    {
+        // Console.WriteLine(ShopDetails.GetType());
+        ShopName = ShopDetails?["shop"]?["name"]?.ToString();
+    }
+}
