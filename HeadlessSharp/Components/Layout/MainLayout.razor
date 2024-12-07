@@ -40,9 +40,20 @@
     
     public void Update(JObject shopInfo)
     {
-        Console.WriteLine($"UPDATES: {shopInfo}");
-        ShopDetails = shopInfo;
-        StateHasChanged();
+        InvokeAsync(() =>
+        {
+            try
+            {
+                Console.WriteLine($"UPDATES: {shopInfo}");
+                ShopDetails = shopInfo;
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"STATEHASCHANGED: {e}");
+            }
+
+        });
     }
     
     private void Startup()

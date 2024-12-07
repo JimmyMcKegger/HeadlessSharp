@@ -56,8 +56,15 @@ public class SfapiSubject : ISfapiSubject
     // unregister from the storefront API subject using the following method
     public void UnregisterObserver(IObserver observer)
     {
-        Console.WriteLine($"REMOVING OBSERVER: {observer}");
-        observers.Remove(observer);
+        try
+        {
+            Console.WriteLine($"REMOVING OBSERVER: {observer}");
+            observers.Remove(observer);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"ERROR IN UNREGISTER: {e}");
+        }
     }
 
     public void NotifyObservers(JObject data)

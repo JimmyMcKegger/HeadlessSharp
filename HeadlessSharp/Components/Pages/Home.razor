@@ -25,10 +25,22 @@
     
     public void Update(JObject shopInfo)
     {
-        shopName = shopInfo["shop"]?["name"]?.ToString();
-        shopDescription = shopInfo["shop"]?["brand"]?["shortDescription"]?.ToString();
-        StateHasChanged();
+        InvokeAsync(() =>
+        {
+            try
+            {
+                var shop = shopInfo["shop"];
+                shopName = shop["name"]?.ToString();
+                shopDescription = shop["brand"]?["shortDescription"]?.ToString();
+                StateHasChanged();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"UPDATE ERROR: {e.Message}");
+            }
+        });
     }
+
     
     private async void Startup()
     {
@@ -38,7 +50,14 @@
     
     public void Dispose()
     {
-        Console.WriteLine("DISPOSING HOME COMPONENT");
-        SfapiSubject.GetInstance().UnregisterObserver(this);
+        try
+        {
+            Console.WriteLine("DISPOSING HOME COMPONENT");
+            SfapiSubject.GetInstance().UnregisterObserver(this);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"DISPOSE ERROR: {e.Message}");
+        }
     }
 }
