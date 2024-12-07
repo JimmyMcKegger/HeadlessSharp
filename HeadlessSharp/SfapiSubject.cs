@@ -50,6 +50,22 @@ public class SfapiSubject : ISfapiSubject
         }
 
     }
+    public async Task AddToCart(string variantId, string cartId="None")
+    {
+        // cartCreate if no existing cart, otherwise cartLinesAdd
+        try
+        {
+            // GraphQLRequest shopQuery = GraphQLQueries.GetHomePageData();
+            // GraphQLResponse<dynamic>? response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
+            // JObject shopInfo = response.Data;
+            // NotifyObservers(shopInfo);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error adding to cart: {e.Message}");
+        }
+
+    }
     // register with the SfapiSubject using the following method
     public void RegisterObserver(IObserver observer)
     {
