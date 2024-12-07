@@ -12,12 +12,12 @@ public class SfapiSubject : ISfapiSubject
     private List<IObserver> observers = new List<IObserver>();
     private readonly GraphQLHttpClient graphqlClient;
     private static SfapiSubject _instance;
-    
+
     // getters and setters
     private string ResponseBody { get; set; }
     public List<IObserver> Observers { get; set; }
     public string CartId { get; set; }
-    
+
     public static SfapiSubject GetInstance(string ApiKey = "", string Domain = "", string ApiVersion = "")
     {
         if (_instance == null)
@@ -27,14 +27,14 @@ public class SfapiSubject : ISfapiSubject
         }
         return _instance;
     }
-    
+
     //  private constructor
     private SfapiSubject(string ApiKey, string Domain, string ApiVersion)
     {
         graphqlClient = new GraphQLHttpClient($"https://{Domain}/api/{ApiVersion}/graphql.json", new NewtonsoftJsonSerializer());
         graphqlClient.HttpClient.DefaultRequestHeaders.Add("X-Shopify-Storefront-Access-Token", ApiKey);
     }
-    
+
     public async Task GetShopInfo()
     {
         try
@@ -48,7 +48,7 @@ public class SfapiSubject : ISfapiSubject
         {
             Console.WriteLine($"Error: {e.Message}");
         }
-        
+
     }
     // register with the SfapiSubject using the following method
     public void RegisterObserver(IObserver observer)
@@ -59,7 +59,7 @@ public class SfapiSubject : ISfapiSubject
             observers.Add(observer);
         }
     }
-    
+
     // unregister from the storefront API subject using the following method
     public void UnregisterObserver(IObserver observer)
     {
