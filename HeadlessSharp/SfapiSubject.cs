@@ -50,7 +50,7 @@ public class SfapiSubject : ISfapiSubject
         }
 
     }
-    public async Task AddToCart(string variantId, string cartId="None")
+    public async Task AddToCart(string variantId, string cartId = "None")
     {
         // cartCreate if no existing cart, otherwise cartLinesAdd
         try
