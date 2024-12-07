@@ -1,8 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @implements IObserver;
+@implements IDisposable;
+
 
 <div class="page">
-    <div class="sidebar">
+    <div class="sidebar" style=@mySidebar>
         <NavMenu ShopDetails="@ShopDetails"/>
     </div>
 
@@ -24,6 +26,14 @@
 </div>
 
 @code{
+    public string mySidebar="sidebar";
+    private string? primary;
+    private string? secondary;
+
+    void ApplyBranding(string first, string second)
+    {
+        mySidebar = $"background-image: linear-gradient(180deg, {first} 0%, {second} 70%) !important;";
+    }
 
     private JObject? ShopDetails = null;
     
@@ -44,20 +54,40 @@
         {
             try
             {
-                Console.WriteLine($"UPDATES: {shopInfo}");
                 ShopDetails = shopInfo;
-                StateHasChanged();
+                var shop = shopInfo["shop"];
+                primary = shop["brand"]?["colors"]?["primary"]?[1]?["foreground"]?.ToString();
+                secondary = shop["brand"]?["colors"]?["secondary"]?[1]?["background"]?.ToString();
+
+                if (primary is not null && secondary is not null)
+                {
+                    ApplyBranding(primary, secondary);
+                }
             }
             catch (Exception e)
             {
-                Console.WriteLine($"STATEHASCHANGED: {e}");
+                Console.WriteLine($"Main layout update error: {e}");
             }
-
+            StateHasChanged();
         });
     }
-    
-    private void Startup()
+  
+    private async void Startup()
     {
         SfapiSubject.GetInstance().RegisterObserver(this);
+        await SfapiSubject.GetInstance().GetShopInfo();
+    }
+    
+    public void Dispose()
+    {
+        try
+        {
+            Console.WriteLine("DISPOSING HOME COMPONENT");
+            SfapiSubject.GetInstance().UnregisterObserver(this);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"DISPOSE ERROR: {e.Message}");
+        }
     }
 }

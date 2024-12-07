@@ -9,39 +9,52 @@ namespace HeadlessSharp
             return new GraphQLRequest
             {
                 Query = @"
-                    query {
-                      shop {
+                    query shopInfo{
+                shop {
+                id
+                name
+                brand{
+                  shortDescription
+                  slogan
+                  colors{
+                    primary{
+                      ... colorInfo
+                    }
+                    secondary{
+                      ... colorInfo
+                    }
+                  }
+                }
+                }
+                products(first:6)
+              {
+                nodes{
+                  id
+                  handle
+                  description
+                  title
+                  featuredImage{
+                    url
+                  }
+                  variants(first:1){
+                    nodes{
                       id
-                      name
-                      brand{
-                        shortDescription
-                        slogan
-                      }
-                      }
-                      products(first:3)
-                    {
-                      nodes{
-                        id
-                        handle
-                        description
-                        title
-                        featuredImage{
-                          url
-                        }
-                        variants(first:1){
-                          nodes{
-                            id
-                            title
-                            sku
-                            price{
-                              amount
-                              currencyCode
-                            }
-                          }
-                        }
+                      title
+                      sku
+                      price{
+                        amount
+                        currencyCode
                       }
                     }
-                }"
+                  }
+                }
+              }
+              }
+
+              fragment colorInfo on BrandColorGroup{
+                background
+                foreground
+              }"
             };
         }
     }
