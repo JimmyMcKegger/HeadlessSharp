@@ -37,20 +37,27 @@ public class SfapiSubject : ISfapiSubject
     
     public async Task GetShopInfo()
     {
-        GraphQLRequest shopQuery = GraphQLQueries.GetHomePageData();
-        var response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
-        Console.WriteLine($"RESPONSE DATA\n{response.Data}");
-        JObject shopInfo = response.Data;
-        // Console.WriteLine($"Shop Info Type: {shopInfo.GetType().Name}");
-        NotifyObservers(shopInfo);
+        try
+        {
+            GraphQLRequest shopQuery = GraphQLQueries.GetHomePageData();
+            GraphQLResponse<dynamic>? response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
+            JObject shopInfo = response.Data;
+            NotifyObservers(shopInfo);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+        }
         
     }
     // register with the SfapiSubject using the following method
     public void RegisterObserver(IObserver observer)
     {
         Console.WriteLine($"ADDING OBSERVER: {observer}");
-        // TODO: only add once
-        observers.Add(observer);
+        if (!observers.Contains(observer))
+        {
+            observers.Add(observer);
+        }
     }
     
     // unregister from the storefront API subject using the following method
