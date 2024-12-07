@@ -1,0 +1,52 @@
+<div class="card-group">
+    @if (Products != null && Products.Any())
+    {
+        @foreach (var product in Products)
+        {
+            <div class="card" style="width:auto;" id=@product["id"]>
+
+                @if (product?["featuredImage"]?["url"] != null)
+                {
+                    <img class="card-img-top" decoding="async" loading="lazy" src="@product?["featuredImage"]?["url"]" alt="Card image cap">
+                }
+                else
+                {
+                    <p>No image available</p>
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@product["title"]</h5>
+                    <br/>
+                    <p class="card-text">@product["description"]</p>
+                    <br/>
+                    @if (product["variants"]["nodes"] != null)
+                    {
+                        var varId = product["variants"]?["nodes"]?[0]?["id"]?.ToString();
+                        <button class="btn btn-primary" @onclick="() => AddToCart(varId)">
+                            Add to Cart
+                        </button>
+                    }
+                    else
+                    {
+                        <p>No variants available</p>
+                    }
+
+                </div>
+            </div>
+        }
+
+    }
+    else
+    {
+        <p>Loading products...</p>
+    }
+</div>
+@code {
+    [Parameter]
+    public JToken? Products { get; set; } 
+    
+    public void AddToCart(string variantId)
+    {
+        Console.WriteLine($"Added to cart: Variant ID - {variantId}");
+    }
+    
+}

@@ -15,6 +15,7 @@ namespace HeadlessSharp
                       name
                       brand{
                         shortDescription
+                        slogan
                       }
                       }
                       products(first:3)
@@ -22,6 +23,7 @@ namespace HeadlessSharp
                       nodes{
                         id
                         handle
+                        description
                         title
                         featuredImage{
                           url

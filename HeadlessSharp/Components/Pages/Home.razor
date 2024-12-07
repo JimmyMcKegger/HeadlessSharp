@@ -5,57 +5,23 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>@shopName</h1>
 
-<h2>@shopDescription</h2>
-
-<br>
-<div class="card-group">
-    @if (products != null && products.Any())
-    {
-        @foreach (var product in products)
-        {
-            <div class="card" style="width:auto;" id=@product["id"]>
-                
-                @if (product?["featuredImage"]?["url"] != null)
-                {
-                    <img class="card-img-top" decoding="async" loading="lazy" src="@product?["featuredImage"]?["url"]" alt="Card image cap">
-                }
-                else
-                {
-                    <p>No image available</p>
-                }
-                <div class="card-body">
-                    <h5 class="card-title">@product["title"]</h5>
-                    
-                    @if (product["variants"]["nodes"] != null)
-                    {
-                        var varId = product["variants"]?["nodes"]?[0]?["id"]?.ToString();
-                        <button class="btn btn-primary" @onclick="() => AddToCart(varId)">
-                            Add to Cart
-                        </button>
-                    }
-                    else
-                    {
-                        <p>No variants available</p>
-                    }
-
-                </div>
-            </div>
-        }
-   
-    }
-    else
-    {
-        <p>Loading products...</p>
-    }
+<div class="jumbotron">
+    <h1 class="display-2">@shopName</h1>
+    <p class="lead">@slogan</p>
+    <hr class="my-4">
+    <p>@shopDescription</p>
 </div>
+
+<br/> 
+
+<ProductCards Products=products></ProductCards>
 
 @code {
     private string? shopName = "Loading...";
     private string? shopDescription = "";
+    private string? slogan = "";
     private JToken? products = null;
-    
     
     // initial page load should have the observer subscribe to the observable
     // then it triggers the API request to populate data
@@ -65,11 +31,6 @@
         {
             Startup();
         }
-    }
-
-    public void AddToCart(string variantId)
-    {
-        Console.WriteLine($"Added to cart: Variant ID - {variantId}");
     }
     
     public void Update(JObject shopInfo)
@@ -82,7 +43,7 @@
                 var shop = shopInfo["shop"];
                 shopName = shop["name"]?.ToString();
                 shopDescription = shop["brand"]?["shortDescription"]?.ToString();
-
+                slogan = shop["brand"]?["slogan"]?.ToString();
                 products = shopInfo["products"]?["nodes"];
             }
             catch (Exception e)

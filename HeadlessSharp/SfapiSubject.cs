@@ -39,8 +39,8 @@ public class SfapiSubject : ISfapiSubject
     {
         try
         {
-            GraphQLRequest shopQuery = GraphQLQueries.GetHomePageData();
-            GraphQLResponse<dynamic>? response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
+            var shopQuery = GraphQLQueries.GetHomePageData();
+            var response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
             JObject shopInfo = response.Data;
             NotifyObservers(shopInfo);
         }
