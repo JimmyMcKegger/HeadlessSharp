@@ -64,13 +64,21 @@
     {
         if (string.IsNullOrEmpty(CartId) || CartId == "null")
         {
-            await SfapiSubject.GetInstance().CartCreate(variant);
+            Console.WriteLine($"CREATE CART");
+            CartId = await Js.InvokeAsync<string>("CreateCart", variant);
+            // get teh id
+            Console.WriteLine($"CartId: {CartId}");
+            // set the cookie
+            Js.InvokeAsync<string>("settCookie", "cart", cartId);
+            
             // redirect to cart
              Navigation.NavigateTo("/cart");
         }
         else
         {
             // CartLinesAdd
+            Console.WriteLine($"CartLinesAdd!!");
+            
         }
     }
 
