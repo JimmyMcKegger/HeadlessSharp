@@ -1,4 +1,5 @@
 ﻿@page "/cart"
+
 @inject IJSRuntime Js
 
 
@@ -6,38 +7,87 @@
 
 <h1>Cart</h1>
 
-@if (CartId is not null)
+@if (CartId is not null && CartId.Contains("gid://shopify/Cart"))
 {
-    <h2>@CartId</h2>
+    <div class="container mt-5 mb -5">
+        <div class="d-flex justify-content-center row">
+            <div class="col-md-8">
+                <div class="p-2">
+                    <h4>Shopping cart</h4>
+                </div>
+                @* @foreach (var line in CartLines) *@
+                @* { *@
+                @*     <p>@line</p> *@
+                @* } *@
+                </div>
+        </div>
+    </div>
+}
+else
+{
+    <h3>Your cart is empty.</h3>
 }
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
 @code {
-    private int currentCount = 0;
-    private string? cart = null;
-    private string? cartToken = null;
+    private string cartId = "";
+
+    public string CartId { get; set; }
     
-    public string? CartId { get; set; }
-    public string? CartToken { get; set; }
+    public async void GetCartIdAsync()
+    {
+        var res = await Js.InvokeAsync<string>("getCookie", "cart");
+        Console.WriteLine($"RES: {res}");
+        if (res is not null && res.Contains("gid://shopify/Cart"))
+        {
+            CartId = res;
+            var cartData = await Js.InvokeAsync<string>("getCartData", res);
+            
+            StateHasChanged();
+        }
+    }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            CartId = await Js.InvokeAsync<string>("getCookie", "cart");
-            CartToken = await Js.InvokeAsync<string>("getCookie", "cart_token");
-            
+            GetCartIdAsync();
         }
-        
-        StateHasChanged();
     }
-
-    private void IncrementCount()
+    
+    public async void Update(JObject cartInfo)
     {
-        currentCount++;
+        InvokeAsync(() =>
+        {
+            try
+            {
+                Console.WriteLine("UPDATE THE CART");
+    
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CART UPDATE ERROR: {e.Message}");
+            }
+        });
+        var NewCartId = cartInfo["cartCreate"]?["cart"]?["id"]?.ToString();
+        if (NewCartId != CartId)
+        {
+            Console.WriteLine($"EXISTING CART: {CartId}");
+            Console.WriteLine($"NEW CART: {NewCartId}");
+            await Js.InvokeVoidAsync("setCookie", "cart", NewCartId);
+            StateHasChanged();
+        }
     }
+    
+    // public void Dispose()
+    // {
+    //     try
+    //     {
+    //         SfapiSubject.GetInstance().UnregisterCartObserver(this, CartId);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine($"DISPOSE ERROR: {e.Message}");
+    //     }
+    // }
 
 }
