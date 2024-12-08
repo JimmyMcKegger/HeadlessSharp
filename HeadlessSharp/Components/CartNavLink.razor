@@ -1,20 +1,25 @@
 @implements IObserver;
 @implements IDisposable;
+@inject IJSRuntime Js
+
 
 
 <div class="nav-item px-3">
     <NavLink class="nav-link" href="cart">
-        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>
-        Cart 
-        @if (itemsInCart > 0)
-        {
-            itemsInCart.ToString();
-        }
+        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Cart @DisplayItems
     </NavLink>
+   
 </div>
 
 @code {
-    public int itemsInCart = 0;
+    private int itemsInCart = 0;
+    public int ItemsInCart { get; set; }
+    private string displayItems = "";
+
+    public string DisplayItems
+    {
+        get => ItemsInCart > 0 ? ItemsInCart.ToString() : "";
+    }
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -30,20 +35,22 @@
         await SfapiSubject.GetInstance().GetCartInfo();
     }
     
-    public void Update(JObject cartInfo)
+    public async void Update(JObject cartInfo)
     {
         InvokeAsync(() =>
         {
-            Console.WriteLine(cartInfo.ToString());
             try
             {
-                // TODO: Linq query to get the sum of all the quantities from the cart lines
+                var totalItems = cartInfo["cart"]["lines"]["nodes"].Select(line => (int?)line["quantity"] ?? 0).Sum();
+                ItemsInCart = totalItems;
             }
             catch (Exception e)
             {
                 Console.WriteLine($"CART UPDATE ERROR: {e.Message}");
             }
         });
+        var NewCartId = cartInfo["cartCreate"]?["cart"]?["id"]?.ToString();
+        await Js.InvokeVoidAsync("setCookie", "cart", NewCartId);
         StateHasChanged();
     }
     
@@ -51,7 +58,6 @@
     {
         try
         {
-            Console.WriteLine("DISPOSING Cart nav");
             SfapiSubject.GetInstance().UnregisterCartObserver(this);
         }
         catch (Exception e)

@@ -1,3 +1,7 @@
+@using RandomString4Net;
+@inject IJSRuntime Js
+
+
 <div class="card-group">
     @if (Products != null && Products.Any())
     {
@@ -21,7 +25,7 @@
                     @if (product["variants"]["nodes"] != null)
                     {
                         var varId = product["variants"]?["nodes"]?[0]?["id"]?.ToString();
-                        <button class="btn btn-primary" @onclick="() => AddToCart(varId)">
+                        <button class="btn btn-primary" @onclick="() => HandleCart(varId)">
                             Add to Cart
                         </button>
                     }
@@ -29,11 +33,9 @@
                     {
                         <p>No variants available</p>
                     }
-
                 </div>
             </div>
         }
-
     }
     else
     {
@@ -44,10 +46,37 @@
     [Parameter]
     public JToken? Products { get; set; } 
     
-    public async void AddToCart(string variantId)
+    private string? cartId = null;
+    public string? CartId { get; set; }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine($"Adding to cart: {variantId}");
-        await SfapiSubject.GetInstance().AddToCart(variantId); 
+        if (firstRender)
+        {
+            CartId = await Js.InvokeAsync<string>("getCookie", "cart");
+        }
+        StateHasChanged();
     }
     
+    [Inject] NavigationManager Navigation { get; set; }
+
+    public async void HandleCart(string variant)
+    {
+        if (string.IsNullOrEmpty(CartId) || CartId == "null")
+        {
+            await SfapiSubject.GetInstance().CartCreate(variant);
+            // redirect to cart
+             Navigation.NavigateTo("/cart");
+        }
+        else
+        {
+            // CartLinesAdd
+        }
+    }
+
+    private string MakeToken()
+    {
+        return RandomString4Net.RandomString.GetString(Types.ALPHANUMERIC_MIXEDCASE, 32);
+    }
+
 }

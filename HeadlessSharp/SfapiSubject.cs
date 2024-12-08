@@ -11,13 +11,16 @@ public class SfapiSubject : ISfapiSubject
     // fields
     private List<IObserver> observers = new List<IObserver>();
     private List<IObserver> cartObservers = new List<IObserver>();
+    // private Dictionary<string, string> tokens = new Dictionary<string, string>;
     private readonly GraphQLHttpClient graphqlClient;
     private static SfapiSubject _instance;
+    
 
     // getters and setters
     private string ResponseBody { get; set; }
     public List<IObserver> Observers { get; set; }
     public List<IObserver> CartObservers { get; set; }
+    // public Dictionary<string, string> Tokens { get; set; }
 
 
     public static SfapiSubject GetInstance(string apiKey = "", string domain = "", string apiVersion = "")
@@ -73,33 +76,68 @@ public class SfapiSubject : ISfapiSubject
             Console.WriteLine($"Error Getting Cart Data: {e.Message}");
         }
     }
-    public async Task AddToCart(string variantId, string? cartId = null)
+    
+    public async Task CartCreate(string variantId)
     {
+        // cartCreate
         Console.WriteLine("CREATING CART");
+        try
+        {
+            var request = GraphQlMutations.CartCreate(variantId);
+            var response = await graphqlClient.SendQueryAsync<dynamic>(request);
+            JObject cartInfo = response.Data;
+            Console.WriteLine(cartInfo);
+            NotifyCartObservers(cartInfo);
+            // cartId = cartInfo["cartCreate"]?["cart"]?["id"]?.ToString();
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error creating cart: {e.Message}");
+        }
         
-        if (cartId is null)
-        {
-            // cartCreate
-            Console.WriteLine("CREATING CART");
-            try
-            {
-                var request = GraphQlMutations.CartCreate(variantId);
-                var response = await graphqlClient.SendQueryAsync<dynamic>(request);
-                JObject cartInfo = response.Data;
-                Console.WriteLine(cartInfo);
-                NotifyCartObservers(cartInfo);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error creating cart: {e.Message}");
-            }
-        }
-        else
-        {
-            // CartLinesAdd
-        }
         
     }
+    
+    // public async Task AddToCart(string variantId, string cartIdOrToken)
+    // {
+    //     //
+    //     bool isCart = cartIdOrToken.Contains("gid://shopify/Cart/");
+    //     
+    //     if (isCart)
+    //     {
+    //         
+    //         // TODO: CartLinesAdd
+    //
+    //         
+    //     }
+    //     else
+    //     {
+    //         // cartCreate
+    //         Console.WriteLine("CREATING CART");
+    //         try
+    //         {
+    //             var request = GraphQlMutations.CartCreate(variantId);
+    //             var response = await graphqlClient.SendQueryAsync<dynamic>(request);
+    //             JObject cartInfo = response.Data;
+    //             Console.WriteLine(cartInfo);
+    //             NotifyCartObservers(cartInfo);
+    //             cartId = cartInfo["cartCreate"]?["cart"]?["id"]?.ToString();
+    //             
+    //             Tokens[cartIdOrToken] = cartInfo["cartCreate"]?["token"]?.ToString();
+    //             
+    //             // TODO: How to set a cookie from here?
+    //             // https://stackoverflow.com/questions/77751794/i-am-trying-to-create-cookie-while-login-with-a-user-in-blazor-web-server-app-bu
+    //             
+    //             
+    //         }
+    //         catch (Exception e)
+    //         {
+    //             Console.WriteLine($"Error creating cart: {e.Message}");
+    //         }
+    //     }
+    //     
+    // }
     // register with the SfapiSubject using the following method
     public void RegisterObserver(IObserver observer)
     {
