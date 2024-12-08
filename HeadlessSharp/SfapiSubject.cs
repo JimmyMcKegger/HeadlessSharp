@@ -10,36 +10,41 @@ public class SfapiSubject : ISfapiSubject
 {
     // fields
     private List<IObserver> observers = new List<IObserver>();
+    private List<IObserver> cartObservers = new List<IObserver>();
     private readonly GraphQLHttpClient graphqlClient;
     private static SfapiSubject _instance;
 
     // getters and setters
     private string ResponseBody { get; set; }
     public List<IObserver> Observers { get; set; }
-    public string CartId { get; set; }
+    public List<IObserver> CartObservers { get; set; }
 
-    public static SfapiSubject GetInstance(string ApiKey = "", string Domain = "", string ApiVersion = "")
+
+    public static SfapiSubject GetInstance(string apiKey = "", string domain = "", string apiVersion = "")
     {
         if (_instance == null)
         {
             // make a singleton because there is only one API
-            _instance = new SfapiSubject(ApiKey, Domain, ApiVersion);
+            _instance = new SfapiSubject(apiKey, domain, apiVersion);
         }
         return _instance;
     }
 
     //  private constructor
-    private SfapiSubject(string ApiKey, string Domain, string ApiVersion)
+    private SfapiSubject(string apiKey, string domain, string apiVersion)
     {
-        graphqlClient = new GraphQLHttpClient($"https://{Domain}/api/{ApiVersion}/graphql.json", new NewtonsoftJsonSerializer());
-        graphqlClient.HttpClient.DefaultRequestHeaders.Add("X-Shopify-Storefront-Access-Token", ApiKey);
+        graphqlClient = new GraphQLHttpClient($"https://{domain}/api/{apiVersion}/graphql.json", new NewtonsoftJsonSerializer());
+        graphqlClient.HttpClient.DefaultRequestHeaders.Add("X-Shopify-Storefront-Access-Token", apiKey);
+        Observers = new List<IObserver>();
+        CartObservers = new List<IObserver>();
     }
 
+    // Get data for shop data observers
     public async Task GetShopInfo()
     {
         try
         {
-            var shopQuery = GraphQLQueries.GetHomePageData();
+            var shopQuery = GraphQlQueries.GetHomePageData();
             var response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
             JObject shopInfo = response.Data;
             NotifyObservers(shopInfo);
@@ -48,23 +53,52 @@ public class SfapiSubject : ISfapiSubject
         {
             Console.WriteLine($"Error: {e.Message}");
         }
-
     }
-    public async Task AddToCart(string variantId, string cartId = "None")
+    
+    // Get data for Cart observers
+    public async Task GetCartInfo()
     {
-        // cartCreate if no existing cart, otherwise cartLinesAdd
+        // TODO: check for a cart cookie
+        // var cartId = that cookie
         try
         {
-            // GraphQLRequest shopQuery = GraphQLQueries.GetHomePageData();
-            // GraphQLResponse<dynamic>? response = await graphqlClient.SendQueryAsync<dynamic>(shopQuery);
-            // JObject shopInfo = response.Data;
-            // NotifyObservers(shopInfo);
+            
+            // var cartQuery = GraphQlQueries.GetCartData(cartId);
+            // var response = await graphqlClient.SendQueryAsync<dynamic>(cartQuery);
+            // JObject cartInfo = response.Data;
+            // NotifyCartObservers(cartInfo);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Error adding to cart: {e.Message}");
+            Console.WriteLine($"Error Getting Cart Data: {e.Message}");
         }
-
+    }
+    public async Task AddToCart(string variantId, string? cartId = null)
+    {
+        Console.WriteLine("CREATING CART");
+        
+        if (cartId is null)
+        {
+            // cartCreate
+            Console.WriteLine("CREATING CART");
+            try
+            {
+                var request = GraphQlMutations.CartCreate(variantId);
+                var response = await graphqlClient.SendQueryAsync<dynamic>(request);
+                JObject cartInfo = response.Data;
+                Console.WriteLine(cartInfo);
+                NotifyCartObservers(cartInfo);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error creating cart: {e.Message}");
+            }
+        }
+        else
+        {
+            // CartLinesAdd
+        }
+        
     }
     // register with the SfapiSubject using the following method
     public void RegisterObserver(IObserver observer)
@@ -75,6 +109,15 @@ public class SfapiSubject : ISfapiSubject
             observers.Add(observer);
         }
     }
+    
+    public void RegisterCartObserver(IObserver observer)
+    {
+        Console.WriteLine($"ADDING CART OBSERVER: {observer}");
+        if (!CartObservers.Contains(observer))
+        {
+            CartObservers.Add(observer);
+        }
+    }
 
     // unregister from the storefront API subject using the following method
     public void UnregisterObserver(IObserver observer)
@@ -82,17 +125,37 @@ public class SfapiSubject : ISfapiSubject
         try
         {
             Console.WriteLine($"REMOVING OBSERVER: {observer}");
-            observers.Remove(observer);
+            Observers.Remove(observer);
         }
         catch (Exception e)
         {
             Console.WriteLine($"ERROR IN UNREGISTER: {e}");
         }
     }
+    
+    public void UnregisterCartObserver(IObserver observer)
+    {
+        try
+        {
+            Console.WriteLine($"REMOVING CART OBSERVER: {observer}");
+            CartObservers.Remove(observer);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"ERROR IN UNREGISTER Carts: {e}");
+        }
+    }
 
     public void NotifyObservers(JObject data)
     {
         foreach (var observer in observers)
+        {
+            observer.Update(data);
+        }
+    }
+    public void NotifyCartObservers(JObject data)
+    {
+        foreach (var observer in CartObservers)
         {
             observer.Update(data);
         }

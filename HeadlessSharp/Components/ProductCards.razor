@@ -44,9 +44,10 @@
     [Parameter]
     public JToken? Products { get; set; } 
     
-    public void AddToCart(string variantId)
+    public async void AddToCart(string variantId)
     {
-        Console.WriteLine($"Added to cart: Variant ID - {variantId}");
+        Console.WriteLine($"Adding to cart: {variantId}");
+        await SfapiSubject.GetInstance().AddToCart(variantId); 
     }
     
 }

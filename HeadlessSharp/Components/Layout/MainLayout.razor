@@ -72,7 +72,7 @@
         });
     }
   
-    private async void Startup()
+    private async Task Startup()
     {
         SfapiSubject.GetInstance().RegisterObserver(this);
         await SfapiSubject.GetInstance().GetShopInfo();

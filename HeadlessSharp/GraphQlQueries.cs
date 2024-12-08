@@ -2,7 +2,7 @@ using GraphQL;
 
 namespace HeadlessSharp
 {
-    public class GraphQLQueries
+    public class GraphQlQueries
     {
         public static GraphQLRequest GetHomePageData()
         {
@@ -56,6 +56,54 @@ namespace HeadlessSharp
                 foreground
               }"
             };
+        }
+
+        public static GraphQLRequest GetCartData(string id)
+        {
+          string cartId = id;
+
+          return new GraphQLRequest
+          {
+            Query = @"
+              query getCartData($id: CartId!){
+                cart(id: $id){
+                  id
+                  checkoutUrl
+                  lines(first:10){
+                    nodes{
+                      merchandise{
+                        __typename
+                        ...on ProductVariant{
+                          id
+                        }
+                      }
+                      quantity
+                    }
+                  }
+                  discountAllocations{
+                    __typename
+                    ... on CartAutomaticDiscountAllocation{
+                      title
+                    }
+                    discountedAmount{
+                      amount
+                      currencyCode
+                    }
+                  }
+                  cost{
+                    subtotalAmount{
+                      amount
+                      currencyCode
+                    }
+                    
+                    totalAmount{
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }"
+          };
         }
     }
 }

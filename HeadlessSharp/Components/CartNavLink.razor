@@ -1,0 +1,62 @@
+@implements IObserver;
+@implements IDisposable;
+
+
+<div class="nav-item px-3">
+    <NavLink class="nav-link" href="cart">
+        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span>
+        Cart 
+        @if (itemsInCart > 0)
+        {
+            itemsInCart.ToString();
+        }
+    </NavLink>
+</div>
+
+@code {
+    public int itemsInCart = 0;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Startup();
+        }
+    }
+    
+    private async void Startup()
+    {
+        SfapiSubject.GetInstance().RegisterCartObserver(this);
+        await SfapiSubject.GetInstance().GetCartInfo();
+    }
+    
+    public void Update(JObject cartInfo)
+    {
+        InvokeAsync(() =>
+        {
+            Console.WriteLine(cartInfo.ToString());
+            try
+            {
+                // TODO: Linq query to get the sum of all the quantities from the cart lines
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"CART UPDATE ERROR: {e.Message}");
+            }
+        });
+        StateHasChanged();
+    }
+    
+    public void Dispose()
+    {
+        try
+        {
+            Console.WriteLine("DISPOSING Cart nav");
+            SfapiSubject.GetInstance().UnregisterCartObserver(this);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"DISPOSE ERROR: {e.Message}");
+        }
+    }
+}
