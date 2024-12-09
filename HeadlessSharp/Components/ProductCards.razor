@@ -25,7 +25,10 @@
                     @if (product["variants"]["nodes"] != null)
                     {
                         var varId = product["variants"]?["nodes"]?[0]?["id"]?.ToString();
-                        
+                        var price = product["variants"]?["nodes"]?[0]?["price"]?["amount"]?.ToString();
+                        var currency = product["variants"]?["nodes"]?[0]?["price"]?["currencyCode"]?.ToString();
+                        <p class="card-text text-right">€ @price @currency</p>
+                        <br/>
                         <button class="btn btn-primary" @onclick="() => HandleCart(varId)">
                             Buy now
                         </button>
