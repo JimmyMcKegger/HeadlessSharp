@@ -73,7 +73,7 @@ public class MainLayoutTest
     }
   }";
         
-        JObject shopInfo = JObject.Parse(json);
+        var shopInfo = JObject.Parse(json);
         // layout.TestInitialize(true);
         // layout.Update(shopInfo);
         

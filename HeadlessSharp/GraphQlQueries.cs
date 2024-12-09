@@ -60,8 +60,13 @@ namespace HeadlessSharp
 
         public static GraphQLRequest GetCartData(string id)
         {
-          string cartId = id;
 
+          if (string.IsNullOrWhiteSpace(id) || !id.Contains("gid://shopify/Cart/"))
+          {
+            throw new ArgumentException("Invalid id");
+          }
+          
+          string cartId = id;
           return new GraphQLRequest
           {
             Query = @"
