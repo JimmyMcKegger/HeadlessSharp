@@ -1,4 +1,5 @@
 using HeadlessSharp;
+using Moq;
 
 namespace TestHeadlessSharp;
 
@@ -24,5 +25,17 @@ public class ObserverTest
         var expected = "foo";
         var actual = ob.DisplayMessage;
         Assert.AreEqual(expected, actual);
+    }
+    
+    [Test]
+    public void AddSubscriber()
+    {
+        var ob = new Observer("testObserver");
+        var subject = new Mock<SfapiSubject>();
+        // TODO: need to mock behaviour
+        // ob.AddSubscriber(subject);
+        // Assert.IsTrue(subject.Observers.Contains(ob));
+        
+        Assert.Pass();
     }
 }
