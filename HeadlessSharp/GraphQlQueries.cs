@@ -9,7 +9,7 @@ namespace HeadlessSharp
             return new GraphQLRequest
             {
                 Query = @"
-                    query shopInfo{
+                    query shopInfo @inContext(country: IE){
                 shop {
                 id
                 name
@@ -65,7 +65,7 @@ namespace HeadlessSharp
           return new GraphQLRequest
           {
             Query = @"
-              query getCartData($id: CartId!){
+              query getCartData($id: CartId!) @inContext(country: IE) {
                 cart(id: $id){
                   id
                   checkoutUrl
@@ -75,6 +75,10 @@ namespace HeadlessSharp
                         __typename
                         ...on ProductVariant{
                           id
+                          price{
+                            amount
+                            currencyCode
+                          }
                         }
                       }
                       quantity
