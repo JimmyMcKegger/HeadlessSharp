@@ -29,10 +29,14 @@
     public string mySidebar="sidebar";
     private string? primary;
     private string? secondary;
+    
+    public string? Primary { get; set; }
+    public string? Secondary { get; set; }
+    public string MySideBar { get; set; }
 
     void ApplyBranding(string first, string second)
     {
-        mySidebar = $"background-image: linear-gradient(180deg, {first} 0%, {second} 70%) !important;";
+        MySideBar = $"background-image: linear-gradient(180deg, {first} 0%, {second} 70%) !important;";
     }
 
     private JObject? ShopDetails = null;
@@ -56,12 +60,12 @@
             {
                 ShopDetails = shopInfo;
                 var shop = shopInfo["shop"];
-                primary = shop["brand"]?["colors"]?["primary"]?[1]?["foreground"]?.ToString();
-                secondary = shop["brand"]?["colors"]?["secondary"]?[1]?["background"]?.ToString();
+                Primary = shop["brand"]?["colors"]?["primary"]?[1]?["foreground"]?.ToString();
+                Secondary = shop["brand"]?["colors"]?["secondary"]?[1]?["background"]?.ToString();
 
-                if (primary is not null && secondary is not null)
+                if (Primary is not null && Secondary is not null)
                 {
-                    ApplyBranding(primary, secondary);
+                    ApplyBranding(Primary, Secondary);
                 }
             }
             catch (Exception e)
