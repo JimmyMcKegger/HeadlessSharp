@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeadlessSharp", "HeadlessSharp\HeadlessSharp.csproj", "{CFE25934-CC5D-4087-B5BB-2C6073F66FB3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHeadlessSharp", "TestHeadlessSharp\TestHeadlessSharp.csproj", "{69D2F4A8-D8A8-405D-85AC-D0AD221E3FB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{CFE25934-CC5D-4087-B5BB-2C6073F66FB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFE25934-CC5D-4087-B5BB-2C6073F66FB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFE25934-CC5D-4087-B5BB-2C6073F66FB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69D2F4A8-D8A8-405D-85AC-D0AD221E3FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D2F4A8-D8A8-405D-85AC-D0AD221E3FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D2F4A8-D8A8-405D-85AC-D0AD221E3FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D2F4A8-D8A8-405D-85AC-D0AD221E3FB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

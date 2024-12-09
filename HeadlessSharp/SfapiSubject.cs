@@ -11,7 +11,7 @@ public class SfapiSubject : ISfapiSubject
     // fields
     private List<IObserver> observers = new List<IObserver>();
     private readonly GraphQLHttpClient graphqlClient;
-    private static SfapiSubject _instance;
+    private static SfapiSubject instance;
     // private Dictionary<string, List<IObserver>> cartObservers = new Dictionary<string, List<IObserver>>();
     
     // getters and setters
@@ -21,12 +21,12 @@ public class SfapiSubject : ISfapiSubject
 
     public static SfapiSubject GetInstance(string apiKey = "", string domain = "", string apiVersion = "")
     {
-        if (_instance == null)
+        if (instance == null)
         {
             // make a singleton because there is only one API
-            _instance = new SfapiSubject(apiKey, domain, apiVersion);
+            instance = new SfapiSubject(apiKey, domain, apiVersion);
         }
-        return _instance;
+        return instance;
     }
 
     //  private constructor
