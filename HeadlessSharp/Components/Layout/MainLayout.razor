@@ -26,17 +26,16 @@
 </div>
 
 @code{
-    public string mySidebar="sidebar";
+    private string mySidebar = "";
     private string? primary;
     private string? secondary;
     
     public string? Primary { get; set; }
     public string? Secondary { get; set; }
-    public string MySideBar { get; set; }
 
     void ApplyBranding(string first, string second)
     {
-        MySideBar = $"background-image: linear-gradient(180deg, {first} 0%, {second} 70%) !important;";
+        mySidebar = $"background-image: linear-gradient(180deg, {first} 0%, {second} 70%) !important;";
     }
 
     private JObject? ShopDetails = null;
@@ -59,14 +58,13 @@
             try
             {
                 ShopDetails = shopInfo;
+                Console.WriteLine(shopInfo);
                 var shop = shopInfo["shop"];
-                Primary = shop["brand"]?["colors"]?["primary"]?[1]?["foreground"]?.ToString();
-                Secondary = shop["brand"]?["colors"]?["secondary"]?[1]?["background"]?.ToString();
-
-                if (Primary is not null && Secondary is not null)
-                {
-                    ApplyBranding(Primary, Secondary);
-                }
+                primary = shop["brand"]?["colors"]?["primary"]?[1]?["foreground"]?.ToString();
+                Console.WriteLine(primary);
+                secondary = shop["brand"]?["colors"]?["secondary"]?[1]?["background"]?.ToString();
+                Console.WriteLine(secondary);
+                ApplyBranding(primary, secondary);
             }
             catch (Exception e)
             {
