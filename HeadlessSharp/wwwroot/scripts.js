@@ -74,7 +74,7 @@ window.CreateCart = variant => {
             console.log(cart);
             setCookie("cart", JSON.stringify(cart));
             console.log(checkoutUrl);
-            window.location.replace(checkoutUrl);
+            window.location.href = checkoutUrl;
         });
 };
 
