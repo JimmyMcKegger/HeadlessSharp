@@ -22,6 +22,7 @@
     private string? shopDescription = "";
     private string? slogan = "";
     private JToken? products = null;
+    public JToken ShopInfo { get; set; }
     
     // initial page load should have the observer subscribe to the observable
     // then it triggers the API request to populate data
@@ -37,20 +38,24 @@
     {
         InvokeAsync(() =>
         {
-            try
+            if (shopInfo != ShopInfo)
             {
-                var shop = shopInfo["shop"];
-                shopName = shop["name"]?.ToString();
-                shopDescription = shop["brand"]?["shortDescription"]?.ToString();
-                slogan = shop["brand"]?["slogan"]?.ToString();
-                products = shopInfo["products"]?["nodes"];
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"UPDATE ERROR: {e.Message}");
+                try
+                {
+                    ShopInfo = shopInfo;
+                    var shop = shopInfo["shop"];
+                    shopName = shop["name"]?.ToString();
+                    shopDescription = shop["brand"]?["shortDescription"]?.ToString();
+                    slogan = shop["brand"]?["slogan"]?.ToString();
+                    products = shopInfo["products"]?["nodes"];
+                    StateHasChanged();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"UPDATE ERROR: {e.Message}");
+                }
             }
         });
-        StateHasChanged();
     }
     
     private async void Startup()

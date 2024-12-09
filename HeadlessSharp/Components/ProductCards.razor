@@ -25,8 +25,9 @@
                     @if (product["variants"]["nodes"] != null)
                     {
                         var varId = product["variants"]?["nodes"]?[0]?["id"]?.ToString();
+                        
                         <button class="btn btn-primary" @onclick="() => HandleCart(varId)">
-                            Add to Cart
+                            Buy now
                         </button>
                     }
                     else
@@ -58,33 +59,15 @@
         StateHasChanged();
     }
     
-    [Inject] NavigationManager Navigation { get; set; }
-
     public async void HandleCart(string variant)
     {
-        if (string.IsNullOrEmpty(CartId) || CartId == "null")
-        {
             Console.WriteLine($"CREATE CART");
-            CartId = await Js.InvokeAsync<string>("CreateCart", variant);
-            // get teh id
-            Console.WriteLine($"CartId: {CartId}");
-            // set the cookie
-            Js.InvokeAsync<string>("settCookie", "cart", cartId);
-            
-            // redirect to cart
-             Navigation.NavigateTo("/cart");
-        }
-        else
-        {
-            // CartLinesAdd
-            Console.WriteLine($"CartLinesAdd!!");
-            
-        }
+            var cartData = await Js.InvokeAsync<string>("CreateCart", variant);
     }
 
-    private string MakeToken()
-    {
-        return RandomString4Net.RandomString.GetString(Types.ALPHANUMERIC_MIXEDCASE, 32);
-    }
+    // private string MakeToken()
+    // {
+    //     return RandomString4Net.RandomString.GetString(Types.ALPHANUMERIC_MIXEDCASE, 32);
+    // }
 
 }

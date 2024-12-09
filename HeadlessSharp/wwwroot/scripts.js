@@ -34,10 +34,11 @@ window.myHeaders = () => {
 window.CreateCart = variant => {
     const graphql = JSON.stringify({
         query: `
-            mutation cartCreate($input: CartInput) {
+            mutation cartCreate($input: CartInput) @inContext(country: IE) {
               cartCreate(input: $input) {
                 cart {
                   id
+                  checkoutUrl
                 }
                 userErrors {
                   field
@@ -68,9 +69,12 @@ window.CreateCart = variant => {
         })
         .then(json => {
             console.log(json);
-            const cartId = json['data']['cartCreate']['cart']['id'];
-            console.log(cartId);
-            setCookie("cart", cartId);
+            const cart = json['data']['cartCreate'];
+            const checkoutUrl = json['data']['cartCreate']["cart"]['checkoutUrl'];
+            console.log(cart);
+            setCookie("cart", JSON.stringify(cart));
+            console.log(checkoutUrl);
+            window.location.replace(checkoutUrl);
         });
 };
 
@@ -132,9 +136,7 @@ window.getCartData = cartId => {
             if (!response.ok) {
                 throw new Error(response.statusText);
             }
+            console.log(response);
             return response.json();
-        })
-        .then(json => {
-            console.log(json);
         });
 };
